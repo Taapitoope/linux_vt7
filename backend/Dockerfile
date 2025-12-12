@@ -1,3 +1,4 @@
+
 # syntax=docker/dockerfile:1
 FROM python:3.11-slim AS base
 
@@ -14,4 +15,3 @@ COPY backend/ /app/
 EXPOSE 8000
 
 CMD ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "app:app"]
-

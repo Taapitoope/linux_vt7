@@ -11,12 +11,12 @@
 <body>
   <h1>Frontend (Nginx) konteilla CI/CD</h1>
   <button id="btn">Kutsu APIa</button>
-  <pre id="result">Tässä pitäisi näkyä tulos...</pre>
+  <pre id="result">Tässä näkyy tulos...</pre>
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
       try {
-        const response = await fetch("/cicd/api/db");
+        const response = await fetch("/cicd/api/api/db");
         const data = await response.json();
         document.getElementById("result").textContent = JSON.stringify(data, null, 2);
       } catch (err) {

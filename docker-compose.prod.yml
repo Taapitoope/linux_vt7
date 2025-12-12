@@ -1,57 +1,45 @@
-version: '3.8'
+version: "3.9"
 
 services:
   db:
     image: mysql:8.4
-    command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
-    env_file:
-      - .env.production
     environment:
-      MYSQL_DATABASE: appdb
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
-      - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      - ./db/init:/docker-entrypoint-initdb.d:ro
     networks:
-      - net
+      - backend_frontend_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   backend:
     image: ${DOCKERHUB_USERNAME}/lemp-backend:latest
-    restart: unless-stopped
-    env_file:
-      - .env.production
     environment:
-      DB_HOST: db
-      DB_USER: appuser
-      DB_PASSWORD: ${MYSQL_APP_PASSWORD}
-      DB_NAME: appdb
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    networks:
+      - backend_frontend_net
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - "8000"
-    networks:
-      - net
 
   frontend:
     image: ${DOCKERHUB_USERNAME}/lemp-frontend:latest
-    restart: unless-stopped
     networks:
-      - net
+      - backend_frontend_net
+    depends_on:
+      - backend
+    ports:
+      - "8001:80"   # host: 8001 -> kontti: 80
 
 volumes:
   db_data:
 
 networks:
-  net:
-    name: lemp_backend_frontend_net
-    driver: bridge
-    
+  backend_frontend_net:
