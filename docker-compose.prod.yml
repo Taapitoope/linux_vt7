@@ -6,41 +6,41 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: supersecretroot
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
       MYSQL_DATABASE: appdb
       MYSQL_USER: appuser
-      MYSQL_PASSWORD: changeme
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${{ secrets.MYSQL_ROOT_PASSWORD }}"]
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 30s
     networks:
       - net
 
   backend:
-    image: ${DOCKERHUB_USERNAME}/lemp-backend:latest
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/lemp-backend:latest
     restart: unless-stopped
     environment:
       DB_HOST: db
       DB_USER: appuser
-      DB_PASSWORD: changeme
+      DB_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
       DB_NAME: appdb
     depends_on:
       db:
         condition: service_healthy
     expose:
-      - "8000"                    # vain sisäisesti, ei ports:
+      - "8000"
     networks:
       - net
 
   frontend:
-    image: ${DOCKERHUB_USERNAME}/lemp-frontend:latest
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/lemp-frontend:latest
     restart: unless-stopped
-    # ei ports: – hostin Nginx hoitaa kaiken
     networks:
       - net
 
