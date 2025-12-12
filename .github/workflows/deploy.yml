@@ -124,6 +124,10 @@ jobs:
     steps:
       - name: Deploy to VM – create .env + start stack
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_APP_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -133,13 +137,14 @@ jobs:
             set -e
             cd /opt/lemp
 
+            # Poista käsin luotu kontti
             docker rm -f cicd-backend 2>/dev/null || true
 
-            # Luo .env.production suoraan GitHub Secretsistä
+            # Luo .env.production käyttäen GitHub Actionsin env-muuttujia
             cat > .env.production << EOF
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_APP_PASSWORD=${{ secrets.MYSQL_APP_PASSWORD }}
-            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+            MYSQL_APP_PASSWORD=$MYSQL_APP_PASSWORD
+            DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
             EOF
 
             # Pysäytä vanha stacki
@@ -149,7 +154,8 @@ jobs:
               docker-compose down
             fi
 
-            # Käynnistä uusilla imageilla
             docker-compose pull
             docker-compose up -d --remove-orphans
+
+            echo "Deployment complete!"
             docker-compose ps
