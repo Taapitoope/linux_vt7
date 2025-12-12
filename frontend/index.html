@@ -14,7 +14,7 @@
       try {
         // HUOM: suhteellinen polku, koska app asuu /cicd alla hostilla
         // mutta kontissa tämä on vain /api/...
-        const response = await fetch("/api/db");
+        const response = await fetch(window.location.pathname + "api/db")
         const data = await response.json();
         document.getElementById("result").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
