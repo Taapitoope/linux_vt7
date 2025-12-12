@@ -128,16 +128,23 @@ jobs:
     needs: copy-init-sql
     steps:
     
-  
+        - name: Copy .env.production to server
+          uses: appleboy/scp-action@v0.1.4
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            username: ${{ secrets.SSH_USER }}
+            key: ${{ secrets.SSH_KEY }}
+            source: .env.production
+            target: /opt/lemp/
 
-      - name: Deploy to VM via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
+        - name: Deploy to VM via SSH
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+           host: ${{ secrets.SSH_HOST }}
+           username: ${{ secrets.SSH_USER }}
+           key: ${{ secrets.SSH_KEY }}
+           port: 22
+           script: |
             set -e
             cd /opt/lemp
 

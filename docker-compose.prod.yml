@@ -5,16 +5,17 @@ services:
     image: mysql:8.4
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
+    env_file:
+      - .env.production
     environment:
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
       MYSQL_DATABASE: appdb
       MYSQL_USER: appuser
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
+      MYSQL_PASSWORD: ${MYSQL_APP_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${{ secrets.MYSQL_ROOT_PASSWORD }}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -23,12 +24,14 @@ services:
       - net
 
   backend:
-    image: ${{ secrets.DOCKERHUB_USERNAME }}/lemp-backend:latest
+    image: ${DOCKERHUB_USERNAME}/lemp-backend:latest
     restart: unless-stopped
+    env_file:
+      - .env.production
     environment:
       DB_HOST: db
       DB_USER: appuser
-      DB_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
+      DB_PASSWORD: ${MYSQL_APP_PASSWORD}
       DB_NAME: appdb
     depends_on:
       db:
@@ -39,7 +42,7 @@ services:
       - net
 
   frontend:
-    image: ${{ secrets.DOCKERHUB_USERNAME }}/lemp-frontend:latest
+    image: ${DOCKERHUB_USERNAME}/lemp-frontend:latest
     restart: unless-stopped
     networks:
       - net
