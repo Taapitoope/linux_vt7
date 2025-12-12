@@ -10,24 +10,17 @@
 </head>
 <body>
   <h1>Frontend (Nginx) konteilla CI/CD</h1>
-  <button id="btn">Kutsu APIa → /cicd/api/db</button>
+  <button id="btn">Kutsu APIa</button>
   <pre id="result">Tässä näkyy tulos...</pre>
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
       try {
-        // Tämä toimii aina, olit sitten /cicd, /cicd/, /cicd/123 tai missä tahansa
-        const apiUrl = new URL("/cicd/api/db", window.location.origin);
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status} ${response.statusText}`);
-        }
-
+        const response = await fetch("/cicd/api/api/db");
         const data = await response.json();
         document.getElementById("result").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        document.getElementById("result").textContent = "API error: " + err.message;
+        document.getElementById("result").textContent = "API error: " + err;
       }
     });
   </script>
