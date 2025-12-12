@@ -129,12 +129,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          envs: MYSQL_ROOT_PASSWORD,MYSQL_APP_PASSWORD,DOCKERHUB_USERNAME
           script: |
             set -e
             cd /opt/lemp
 
-            # Poista käsin luotu kontti (ei kaada workflowta jos ei ole)
             docker rm -f cicd-backend 2>/dev/null || true
 
             # Luo .env.production suoraan GitHub Secretsistä
@@ -154,6 +152,4 @@ jobs:
             # Käynnistä uusilla imageilla
             docker-compose pull
             docker-compose up -d --remove-orphans
-
-            echo "Deployment complete!"
             docker-compose ps
