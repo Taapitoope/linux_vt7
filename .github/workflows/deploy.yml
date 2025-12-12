@@ -118,36 +118,32 @@ jobs:
             sudo mv /tmp/docker-compose.prod.yml /opt/lemp/docker-compose.yml
 
 
-  deploy:
+    deploy:
     runs-on: ubuntu-latest
     needs: copy-init-sql
     steps:
       - name: Deploy to VM – create .env + start stack
         uses: appleboy/ssh-action@v1.0.3
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_APP_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: 22
+          # <-- TÄMÄ ON OIKEA TAPA VÄLITTÄÄ SALAISUUDET
+          envs: MYSQL_ROOT_PASSWORD,MYSQL_APP_PASSWORD,DOCKERHUB_USERNAME
           script: |
             set -e
             cd /opt/lemp
 
-            # Poista käsin luotu kontti
             docker rm -f cicd-backend 2>/dev/null || true
 
-            # Luo .env.production käyttäen GitHub Actionsin env-muuttujia
+            # KÄYTÄ SUORAAN SALAISUUKSIA – NE OVAT JO SSH-SKriptissä ympäristömuuttujina
             cat > .env.production << EOF
             MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
             MYSQL_APP_PASSWORD=$MYSQL_APP_PASSWORD
             DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
             EOF
 
-            # Pysäytä vanha stacki
             if [ ! -d "/var/lib/docker/volumes/lemp_db_data" ]; then
               docker-compose down -v
             else
@@ -159,3 +155,7 @@ jobs:
 
             echo "Deployment complete!"
             docker-compose ps
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_APP_PASSWORD: ${{ secrets.MYSQL_APP_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
