@@ -3,7 +3,7 @@
 This project uses GitHub Actions for CI/CD, including Docker image build, push, and remote deployment via SSH.
  
 ## Prerequisites
-
+ 
 1. **Docker Hub Account**
    - Create a Docker Hub account if you don't have one.
    - Generate a Docker Hub access token (Account Settings → Security → New Access Token).
