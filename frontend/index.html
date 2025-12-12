@@ -3,22 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <title>Frontend (Nginx) konteilla cicd</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+  </style>
 </head>
 <body>
-  <h1>Frontend (Nginx) konteilla cicd</h1>
-  <button id="btn">Kutsu APIa</button>
-  <pre id="result"></pre>
+  <h1>Frontend (Nginx) konteilla CI/CD</h1>
+  <button id="btn">Kutsu APIa → /cicd/api/db</button>
+  <pre id="result">Tässä näkyy tulos...</pre>
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
       try {
-        // HUOM: suhteellinen polku, koska app asuu /cicd alla hostilla
-        // mutta kontissa tämä on vain /api/...
-        const response = await fetch(window.location.pathname + "api/db")
+        // Tämä toimii aina, olit sitten /cicd, /cicd/, /cicd/123 tai missä tahansa
+        const apiUrl = new URL("/cicd/api/db", window.location.origin);
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
         document.getElementById("result").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        document.getElementById("result").textContent = "API error: " + err;
+        document.getElementById("result").textContent = "API error: " + err.message;
       }
     });
   </script>
