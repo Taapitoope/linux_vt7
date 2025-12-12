@@ -54,3 +54,4 @@ networks:
   net:
     name: lemp_backend_frontend_net
     driver: bridge
+    
