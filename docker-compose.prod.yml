@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   db:
     image: mysql:8.4
@@ -22,7 +23,6 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
-
     networks:
       - backend_frontend_net
     depends_on:
@@ -36,7 +36,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "8001:80"   # expose only frontend to the host
+      - "8001:80"   # host: 8001 -> kontti: 80
 
 volumes:
   db_data:
