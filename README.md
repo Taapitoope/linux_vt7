@@ -1,6 +1,5 @@
 # LEMP Containers CI/CD with GitHub Actions
 
-
 This project uses GitHub Actions for CI/CD, including Docker image build, push, and remote deployment via SSH.
 
 ## Prerequisites
