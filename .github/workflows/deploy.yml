@@ -7,18 +7,24 @@ on:
 
 jobs:
 
+  # ---------------------------------------------------------
+  # SIMPLE TEST JOB (builds frontend container only)
+  # ---------------------------------------------------------
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run simple test
+      - name: Run simple frontend container build test
         run: |
-          echo "Running simple CI test"
-          # yksinkertainen sanity-check: README.md pitää löytyä
-          test -f README.md
+          echo "Running simple frontend container build test"
+          docker build -t test-frontend -f frontend/Dockerfile .
+          echo "Frontend container build test PASSED"
 
+  # ---------------------------------------------------------
+  # BUILD & PUSH JOB
+  # ---------------------------------------------------------
   build-and-push:
     runs-on: ubuntu-latest
     needs: test
@@ -70,6 +76,9 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/lemp-frontend:latest
           cache-to: type=inline
 
+  # ---------------------------------------------------------
+  # COPY INIT SQL + COMPOSE FILES TO VM
+  # ---------------------------------------------------------
   copy-init-sql:
     runs-on: ubuntu-latest
     needs: build-and-push
@@ -130,6 +139,9 @@ jobs:
           script: |
             sudo cp /tmp/docker-compose.prod.yml /opt/lemp/docker-compose.yml
 
+  # ---------------------------------------------------------
+  # DEPLOY JOB
+  # ---------------------------------------------------------
   deploy:
     runs-on: ubuntu-latest
     needs: copy-init-sql
