@@ -1,6 +1,6 @@
 aja git actions ja jos se menee pieleen sen takia et backend on päällä
 niin tee kohta 1. ja aja actions uuelleen. kun git actions on mennyt läpi tee kohdat 1, 2 ja 3.
-
+ 
 1. docker rm -f cicd-backend
 
 2. docker run -d --name cicd-backend \
