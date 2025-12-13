@@ -1,25 +1,3 @@
-aja git actions ja jos se menee pieleen sen takia et backend on päällä
-niin tee kohta 1. ja aja actions uuelleen. kun git actions on mennyt läpi tee kohdat 1, 2 ja 3.
-
-1. docker rm -f cicd-backend
-
-2. docker run -d --name cicd-backend \
-  --network lemp_backend_frontend_net \
-  -p 8000:8000 \
-  -e DB_HOST=lemp_db_1 \
-  -e DB_USER=root \
-  -e DB_PASSWORD=supersecretroot \
-  -e DB_NAME=appdb \
-  taapitoope/lemp-backend:latest \
-  gunicorn -w 4 -b 0.0.0.0:8000 app:app
-
-  ja tän jälkee testaa
-
-3. curl -i http://127.0.0.1:8000/api/db
-
-valitettavasti tämä oli ainut tapa saada toimimaan, katso vaikka git actions historia.
-
-
 # LEMP Containers CI/CD with GitHub Actions
 
 This project uses GitHub Actions for CI/CD, including Docker image build, push, and remote deployment via SSH.
@@ -94,21 +72,23 @@ For more details, see the workflow file in `.github/workflows/deploy.yml`.
 
 
 
-aja git actions ja jos se menee pieleen sen takia et backend on päällä niin tee kohta 1. ja aja actions uuelleen. kun git actions on mennyt läpi tee kohdat 1, 2 ja 3.
+aja git actions ja jos se menee pieleen sen takia et backend on päällä
+niin tee kohta 1. ja aja actions uuelleen. kun git actions on mennyt läpi tee kohdat 1, 2 ja 3.
 
-docker rm -f cicd-backend
+1. docker rm -f cicd-backend
 
-docker run -d --name cicd-backend
---network lemp_backend_frontend_net
--p 8000:8000
--e DB_HOST=lemp_db_1
--e DB_USER=root
--e DB_PASSWORD=supersecretroot
--e DB_NAME=appdb
-taapitoope/lemp-backend:latest
-gunicorn -w 4 -b 0.0.0.0:8000 app:app
+2. docker run -d --name cicd-backend \
+  --network lemp_backend_frontend_net \
+  -p 8000:8000 \
+  -e DB_HOST=lemp_db_1 \
+  -e DB_USER=root \
+  -e DB_PASSWORD=supersecretroot \
+  -e DB_NAME=appdb \
+  taapitoope/lemp-backend:latest \
+  gunicorn -w 4 -b 0.0.0.0:8000 app:app
 
-ja tän jälkee testaa
+  ja tän jälkee testaa
 
-curl -i http://127.0.0.1:8000/api/db
+3. curl -i http://127.0.0.1:8000/api/db
+
 valitettavasti tämä oli ainut tapa saada toimimaan, katso vaikka git actions historia.
