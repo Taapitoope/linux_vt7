@@ -16,7 +16,7 @@
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
       try {
-        const response = await fetch("/cicd/api/db");
+        const response = await fetch("/cicd/api/api/db");
         const data = await response.json();
         document.getElementById("result").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
